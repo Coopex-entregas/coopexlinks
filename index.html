@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#0439bf">
   <meta name="color-scheme" content="light">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta name="coopex-design" content="liquid-glass-3d-20261101-v2">
+  <meta name="coopex-design" content="liquid-glass-3d-20261102-v3">
 
   <!-- PWA / Ícones -->
   <link rel="manifest" href="./site.webmanifest">
@@ -41,6 +41,22 @@ h1{margin:0;text-align:center;color:white;font-weight:850;font-size:clamp(23px,5
 @media(max-height:650px){.inner{padding-top:8px;padding-bottom:8px;gap:3px}.logoWrap{width:clamp(58px,12dvh,88px);height:clamp(58px,12dvh,88px)}h1{font-size:clamp(20px,4.8vw,28px)}.subtitle{font-size:12px}.secure{padding:6px}.shield{width:39px;height:39px}.btns{gap:9px}.btn{min-height:66px;padding:7px}.ico{width:43px;height:43px}.miniIcon{width:38px;height:38px}.foot{font-size:10px}}
 @media(max-width:345px){.inner{padding-inline:9px}.btn{padding:8px}.left{gap:8px}.pill{padding:7px;font-size:11px}.name{font-size:13px}.desc{font-size:10px}h1{font-size:22px}.secureTitle{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.card,.btn,.miniIcon{transition:none!important;transform:none!important}}
+
+/* iPhone e PWA instalado: safe areas, dimensões compactas */
+html,body{width:100%;min-height:100%;overflow-x:hidden}
+body{min-height:100dvh}
+.phone{height:100vh;height:100dvh;min-height:0;max-width:100vw;overflow:hidden;padding-top:calc(env(safe-area-inset-top,0px) + 9px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 9px);padding-left:max(9px,env(safe-area-inset-left,0px));padding-right:max(9px,env(safe-area-inset-right,0px))}
+.card{height:100%;max-height:100%;min-height:0;width:min(100%,520px)}
+.inner{min-height:0;min-width:0;overflow:hidden;gap:clamp(3px,.7dvh,9px)}
+.logoWrap{width:clamp(55px,11.5dvh,105px);height:clamp(55px,11.5dvh,105px);flex:0 1 auto}
+h1{font-size:clamp(19px,5.3vw,34px)}.subtitle{font-size:clamp(11px,3.1vw,17px)}
+.secure{padding:clamp(6px,1dvh,12px)}.shield{width:clamp(36px,6dvh,56px);height:clamp(36px,6dvh,56px)}
+.btns{gap:clamp(7px,1.2dvh,16px)}.btn{min-height:clamp(60px,9.5dvh,95px);padding:clamp(6px,1dvh,12px)}
+.ico{width:clamp(38px,6.3dvh,63px);height:clamp(38px,6.3dvh,63px)}
+.miniIcon{width:clamp(37px,5.8dvh,56px);height:clamp(37px,5.8dvh,56px)}
+.motionEnable{align-self:center;flex-shrink:0;max-width:100%;padding:7px 14px;font-size:clamp(11px,2.7vw,13px);border:1px solid #8bdfff;background:#f8ffffed;color:#0947a8;border-radius:999px;box-shadow:0 3px 10px #00378d55;cursor:pointer}
+@media(max-height:700px){.inner{padding-block:6px;gap:3px}.logoWrap{width:56px;height:56px}.secure{padding:5px}.btn{min-height:56px;padding:5px}.ico{width:37px;height:37px}.miniIcon{width:35px;height:35px}.btns{gap:6px}.subtitle{margin:0}.secureTitle{font-size:11px}.secureText{font-size:10px}.name{font-size:13px}.desc{font-size:10px}.foot{font-size:10px}}
+@media(max-height:570px){.logoWrap{width:45px;height:45px}.secure{padding:4px}.shield{width:30px;height:30px}.btn{min-height:47px}.ico{width:32px;height:32px}.miniIcon{width:30px;height:30px}.motionEnable{padding:4px 10px}}
 
 </style>
 </head>
@@ -143,17 +159,28 @@ h1{margin:0;text-align:center;color:white;font-weight:850;font-size:clamp(23px,5
   <script>
 document.getElementById('y').textContent=new Date().getFullYear();
 (()=>{
-const card=document.querySelector('.card');if(!card||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-let x=0,y=0,tx=0,ty=0,raf=0,baseline=null;
-function animate(){x+=(tx-x)*.08;y+=(ty-y)*.08;card.style.setProperty('--rx',x.toFixed(2)+'deg');card.style.setProperty('--ry',y.toFixed(2)+'deg');card.style.setProperty('--shine',(50+y*6).toFixed(1)+'%');if(Math.abs(tx-x)>.01||Math.abs(ty-y)>.01)raf=requestAnimationFrame(animate);else raf=0;}
-function onMove(e){if(e.beta==null||e.gamma==null)return;if(!baseline)baseline={beta:e.beta,gamma:e.gamma};tx=Math.max(-2,Math.min(2,(baseline.beta-e.beta)*.08));ty=Math.max(-2,Math.min(2,(e.gamma-baseline.gamma)*.08));if(!raf)raf=requestAnimationFrame(animate);}
-function listen(){addEventListener('deviceorientation',onMove,{passive:true});}
-if(typeof DeviceOrientationEvent==='undefined')return;
-if(typeof DeviceOrientationEvent.requestPermission==='function'){
- const button=document.createElement('button');button.className='motionEnable';button.type='button';button.textContent='Ativar efeito 3D';document.querySelector('.foot').before(button);
- button.addEventListener('click',async()=>{try{if(await DeviceOrientationEvent.requestPermission()==='granted'){listen();button.remove();}else button.textContent='Movimento não autorizado';}catch(_){button.textContent='Sensor indisponível';}});
-}else listen();
+ const card=document.querySelector('.card'),foot=document.querySelector('.foot');
+ if(!card||!foot||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ let rx=0,ry=0,tx=0,ty=0,raf=0,base=null;
+ function tick(){rx+=(tx-rx)*.12;ry+=(ty-ry)*.12;card.style.setProperty('--rx',rx.toFixed(2)+'deg');card.style.setProperty('--ry',ry.toFixed(2)+'deg');card.style.setProperty('--shine',(50+ry*7).toFixed(1)+'%');if(Math.abs(tx-rx)>.01||Math.abs(ty-ry)>.01)raf=requestAnimationFrame(tick);else raf=0;}
+ function motion(e){if(e.beta==null||e.gamma==null)return;if(!base)base={beta:e.beta,gamma:e.gamma};tx=Math.max(-1.6,Math.min(1.6,(base.beta-e.beta)*.08));ty=Math.max(-1.6,Math.min(1.6,(e.gamma-base.gamma)*.08));if(!raf)raf=requestAnimationFrame(tick);}
+ function start(){addEventListener('deviceorientation',motion,{passive:true});}
+ if(typeof DeviceOrientationEvent==='undefined')return;
+ if(typeof DeviceOrientationEvent.requestPermission==='function'){
+  const btn=document.createElement('button');btn.type='button';btn.className='motionEnable';btn.textContent='Ativar efeito 3D';foot.before(btn);
+  btn.addEventListener('click',async()=>{try{const result=await DeviceOrientationEvent.requestPermission();if(result==='granted'){start();btn.remove();}else btn.textContent='Movimento não autorizado';}catch(err){btn.textContent='Sensor indisponível';}});
+ }else start();
 })();
+if('serviceWorker' in navigator){
+ window.addEventListener('load',async()=>{
+  try{
+   const regs=await navigator.serviceWorker.getRegistrations();
+   for(const r of regs){if(r.scope.startsWith(location.origin+'/coopexlinks/'))await r.unregister();}
+   const keys=await caches.keys();
+   for(const k of keys){if(/coopex|link|static/i.test(k))await caches.delete(k);}
+  }catch(e){}
+ });
+}
 </script>
 </body>
 </html>
