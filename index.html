@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Coopex Entregas • Links</title>
-  <meta name="description" content="Acessos rápidos da Coopex: Estabelecimento, Supervisão e Parcerias.">
+  <meta name="description" content="Acessos rápidos da Coopex: Estabelecimento e Supervisão.">
   <meta name="theme-color" content="#0B3DFF">
 
   <!-- PWA / Ícones -->
@@ -16,7 +16,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./style.css?v=20261101-3d">
 </head>
 <body>
   <main class="phone">
@@ -79,24 +79,7 @@
             <div class="pill">Abrir</div>
           </a>
 
-          <a class="btn" href="https://kratossystem.onrender.com/login" target="_blank" rel="noopener">
-            <div class="left">
-              <div class="ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M7.5 13.5 5 11a2.2 2.2 0 0 1 0-3.1l1-1a2.2 2.2 0 0 1 3.1 0l1.2 1.2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M16.5 13.5 19 11a2.2 2.2 0 0 0 0-3.1l-1-1a2.2 2.2 0 0 0-3.1 0l-1.2 1.2" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M9.2 10.2 12 13l2.8-2.8a2 2 0 0 1 2.8 0l.4.4a2 2 0 0 1 0 2.8l-3.7 3.7a3 3 0 0 1-4.2 0L6.4 13.4a2 2 0 0 1 0-2.8l.4-.4a2 2 0 0 1 2.8 0Z" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-              <div class="meta">
-                <div class="name">Parcerias</div>
-                <div class="desc">parcerias com a coopex</div>
-              </div>
-            </div>
-            <div class="pill">Abrir</div>
-          </a>
-
-         <div class="miniActions">
+          <div class="miniActions">
   <!-- WhatsApp (não mostra número; abre conversa) -->
   <a class="miniIcon"
      href="https://wa.me/5584981110706"
@@ -132,30 +115,19 @@
   </main>
 
   <script>
-    document.getElementById("y").textContent = new Date().getFullYear();
-
-    document.getElementById("copy").addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(location.href);
-        alert("Link copiado!");
-      } catch (e) {
-        alert("Copie manualmente: " + location.href);
-      }
-    });
-
-    document.getElementById("share").addEventListener("click", async () => {
-      try {
-        if (navigator.share) {
-          await navigator.share({
-            title: document.title,
-            text: "Coopex Entregas - Acessos rápidos",
-            url: location.href
-          });
-        } else {
-          alert("Compartilhamento não disponível. Copie o link: " + location.href);
-        }
-      } catch (e) {}
-    });
-  </script>
+document.getElementById('y').textContent=new Date().getFullYear();
+(()=>{
+const card=document.querySelector('.card');if(!card||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+let x=0,y=0,tx=0,ty=0,raf=0,baseline=null;
+function animate(){x+=(tx-x)*.08;y+=(ty-y)*.08;card.style.setProperty('--rx',x.toFixed(2)+'deg');card.style.setProperty('--ry',y.toFixed(2)+'deg');card.style.setProperty('--shine',(50+y*6).toFixed(1)+'%');if(Math.abs(tx-x)>.01||Math.abs(ty-y)>.01)raf=requestAnimationFrame(animate);else raf=0;}
+function onMove(e){if(e.beta==null||e.gamma==null)return;if(!baseline)baseline={beta:e.beta,gamma:e.gamma};tx=Math.max(-2,Math.min(2,(baseline.beta-e.beta)*.08));ty=Math.max(-2,Math.min(2,(e.gamma-baseline.gamma)*.08));if(!raf)raf=requestAnimationFrame(animate);}
+function listen(){addEventListener('deviceorientation',onMove,{passive:true});}
+if(typeof DeviceOrientationEvent==='undefined')return;
+if(typeof DeviceOrientationEvent.requestPermission==='function'){
+ const button=document.createElement('button');button.className='motionEnable';button.type='button';button.textContent='Ativar efeito 3D';document.querySelector('.foot').before(button);
+ button.addEventListener('click',async()=>{try{if(await DeviceOrientationEvent.requestPermission()==='granted'){listen();button.remove();}else button.textContent='Movimento não autorizado';}catch(_){button.textContent='Sensor indisponível';}});
+}else listen();
+})();
+</script>
 </body>
 </html>
